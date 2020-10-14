@@ -52,7 +52,7 @@ public class OVChipkaart {
         this.saldo = saldo;
     }
 
-    public void addproduct_nummer(Product pro){
+    public void addOVProduct(Product pro){
         this.product_nummer.add(pro);
     }
 

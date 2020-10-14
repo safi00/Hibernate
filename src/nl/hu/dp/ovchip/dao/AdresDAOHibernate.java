@@ -4,15 +4,19 @@ import nl.hu.dp.ovchip.domein.Adres;
 import nl.hu.dp.ovchip.domein.Reiziger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AdresDAOHibernate implements AdresDAO {
-    private Session currentSession;
-    private Transaction currentTransaction;
+    private final Session     currentSession;
+    private final Transaction currentTransaction;
+    private       ReizigerDAO reizD;
     public  AdresDAOHibernate(Session session) {
-    this.currentSession = session;
+        this.currentSession = session;
+        this.currentTransaction  = currentSession.beginTransaction();
+    }
+
+    public void   setRdao(ReizigerDAO dao) {
+        this.reizD = dao;
     }
 
     public Session getCurrentSession() {
@@ -24,45 +28,40 @@ public class AdresDAOHibernate implements AdresDAO {
     }
 
     @Override
-    public boolean save(Adres adres) throws SQLException {
+    public boolean save(Adres adres) {
         getCurrentSession().save(adres);
         return true;
     }
 
     @Override
-    public boolean update(Adres adres) throws SQLException {
+    public boolean update(Adres adres) {
         getCurrentSession().update(adres);
         return true;
     }
 
     @Override
-    public boolean delete(Adres adres) throws SQLException {
+    public boolean delete(Adres adres) {
         getCurrentSession().delete(adres);
         return true;
     }
 
     @Override
-    public Adres findById(int id) throws SQLException {
-        Adres adres = (Adres) getCurrentSession().get(Adres.class, id);
-        return adres;
+    public Adres findById(int id) {
+        return getCurrentSession().get(Adres.class, id);
     }
 
     @Override
-    public List<Adres> findByWoonplaats(String woonplaats) throws SQLException {
-//        List<Adres> adres = (Adres) getCurrentSession().get(Adres.class, woonplaats);
-        List<Adres> adres = new ArrayList<Adres>();
-        return adres;
+    public List<Adres> findByWoonplaats(String woonplaats) {
+        return (List<Adres>) getCurrentSession().createQuery("from Adres where woonplaats = '" + woonplaats + "'").list();
     }
 
     @Override
-    public Adres findByReiziger(Reiziger entity) throws SQLException {
-        Adres adres = (Adres) getCurrentSession().get(Adres.class, entity.getIdNummer());
-        return adres;
+    public Adres findByReiziger(Reiziger reiziger) {
+        return getCurrentSession().get(Adres.class, reiziger.getIdNummer());
     }
 
     @Override
     public List<Adres> findAll() {
-        List<Adres> adreslist = (List<Adres>) getCurrentSession().createQuery("from Adres").list();
-        return adreslist; //adres_id,postcode,huisnummer,straat,woonplaats,reiziger_id
+        return (List<Adres>) getCurrentSession().createQuery("from Adres").list(); //adres_id,postcode,huisnummer,straat,woonplaats,reiziger_id
     }
 }
